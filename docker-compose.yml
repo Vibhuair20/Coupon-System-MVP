@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=coupon_db
+      - DB_PORT=5432
+      - APP_PORT=8080
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+    networks:
+      - coupon-network
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=coupon_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - coupon-network
+
+volumes:
+  postgres_data:
+
+networks:
+  coupon-network:
+    driver: bridge
+
